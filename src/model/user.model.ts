@@ -14,3 +14,8 @@ export class LoginUserReq {
   username: string;
   password: string;
 }
+
+export class UpdateUserReq {
+  name?: string;
+  password?: string;
+}
