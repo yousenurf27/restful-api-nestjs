@@ -131,9 +131,6 @@ Response Body (Success) :
 
 ```json
 {
-  "data": {
-    "username": "yousenurf",
-    "name": "Youse Nur F"
-  }
+  "data": "Success logout."
 }
 ```
