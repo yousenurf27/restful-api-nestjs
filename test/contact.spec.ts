@@ -56,7 +56,7 @@ describe('ContactController', () => {
           first_name: 'test',
           last_name: 'test',
           email: 'test@gmail.com',
-          phone: '09812889379',
+          phone: '08999',
         });
 
       logger.info(response.body);
@@ -66,7 +66,111 @@ describe('ContactController', () => {
       expect(response.body.data.first_name).toBe('test');
       expect(response.body.data.last_name).toBe('test');
       expect(response.body.data.email).toBe('test@gmail.com');
-      expect(response.body.data.phone).toBe('09812889379');
+      expect(response.body.data.phone).toBe('08999');
+    });
+  });
+
+  describe('GET /api/contacts/:contactId', () => {
+    beforeEach(async () => {
+      await testService.deleteAll();
+
+      await testService.createUser();
+      await testService.createContact();
+    });
+
+    it('should be rejected if contact is not found', async () => {
+      const contact = await testService.getContact();
+      const response = await request(app.getHttpServer())
+        .get(`/api/contacts/${contact.id + 1}`)
+        .set('Authorization', 'test');
+
+      logger.info(response.body);
+
+      expect(response.status).toBe(404);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to get ccontact', async () => {
+      const contact = await testService.getContact();
+      const response = await request(app.getHttpServer())
+        .get(`/api/contacts/${contact.id}`)
+        .set('Authorization', 'test');
+
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.id).toBeDefined();
+      expect(response.body.data.first_name).toBe('test');
+      expect(response.body.data.last_name).toBe('test');
+      expect(response.body.data.email).toBe('test@gmail.com');
+      expect(response.body.data.phone).toBe('08999');
+    });
+  });
+
+  describe('PUT /api/contacts/:contactId', () => {
+    beforeEach(async () => {
+      await testService.deleteAll();
+
+      await testService.createUser();
+      await testService.createContact();
+    });
+
+    it('should be rejected if request is invalid', async () => {
+      const contact = await testService.getContact();
+      const response = await request(app.getHttpServer())
+        .put(`/api/contacts/${contact.id}`)
+        .set('Authorization', 'test')
+        .send({
+          first_name: '',
+          last_name: '',
+          email: 'salah',
+          phone: '',
+        });
+
+      logger.info(response.body);
+
+      expect(response.status).toBe(400);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be rejected if contact is not found', async () => {
+      const contact = await testService.getContact();
+      const response = await request(app.getHttpServer())
+        .put(`/api/contacts/${contact.id + 1}`)
+        .set('Authorization', 'test')
+        .send({
+          first_name: 'test updated',
+          last_name: 'test updated',
+          email: 'test_updated@gmail.com',
+          phone: '0899988',
+        });
+
+      logger.info(response.body);
+
+      expect(response.status).toBe(404);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to update ccontact', async () => {
+      const contact = await testService.getContact();
+      const response = await request(app.getHttpServer())
+        .put(`/api/contacts/${contact.id}`)
+        .set('Authorization', 'test')
+        .send({
+          first_name: 'test updated',
+          last_name: 'test updated',
+          email: 'test_updated@gmail.com',
+          phone: '0899988',
+        });
+
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.id).toBeDefined();
+      expect(response.body.data.first_name).toBe('test updated');
+      expect(response.body.data.last_name).toBe('test updated');
+      expect(response.body.data.email).toBe('test_updated@gmail.com');
+      expect(response.body.data.phone).toBe('0899988');
     });
   });
 });
