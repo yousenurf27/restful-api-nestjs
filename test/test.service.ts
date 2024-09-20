@@ -6,8 +6,21 @@ import * as bcrypt from 'bcrypt';
 export class TestService {
   constructor(private prismaService: PrismaService) {}
 
+  async deleteAll() {
+    await this.deleteContact();
+    await this.deleteUser();
+  }
+
   async deleteUser() {
     await this.prismaService.user.deleteMany({
+      where: {
+        username: 'test',
+      },
+    });
+  }
+
+  async deleteContact() {
+    await this.prismaService.contact.deleteMany({
       where: {
         username: 'test',
       },
