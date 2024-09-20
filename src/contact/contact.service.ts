@@ -88,4 +88,17 @@ export class ContactService {
 
     return this.toContactRes(updateContact);
   }
+
+  async remove(user: User, contactId: number): Promise<ContactRes> {
+    await this.verifyContact(user.username, contactId);
+
+    const contact = await this.prismaService.contact.delete({
+      where: {
+        id: contactId,
+        username: user.username,
+      },
+    });
+
+    return this.toContactRes(contact);
+  }
 }
