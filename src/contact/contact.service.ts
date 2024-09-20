@@ -6,10 +6,12 @@ import { Contact, User } from '@prisma/client';
 import {
   ContactRes,
   CreateContactReq,
+  SearchContactReq,
   UpdateContactReq,
 } from '../model/contact.model';
 import { ValidationService } from '../common/validation.service';
 import { ContactValidation } from './contact.validation';
+import { WebResponse } from '../model/web.model';
 
 @Injectable()
 export class ContactService {
@@ -100,5 +102,77 @@ export class ContactService {
     });
 
     return this.toContactRes(contact);
+  }
+
+  async search(
+    user: User,
+    request: SearchContactReq,
+  ): Promise<WebResponse<ContactRes[]>> {
+    const searchContactReq: SearchContactReq = this.validationService.validate(
+      ContactValidation.SEARCH,
+      request,
+    );
+
+    const filters = [];
+
+    if (searchContactReq.name) {
+      filters.push({
+        OR: [
+          {
+            first_name: {
+              contains: searchContactReq.name,
+            },
+          },
+          {
+            last_name: {
+              contains: searchContactReq.name,
+            },
+          },
+        ],
+      });
+    }
+
+    if (searchContactReq.email) {
+      filters.push({
+        email: {
+          contains: searchContactReq.email,
+        },
+      });
+    }
+
+    if (searchContactReq.phone) {
+      filters.push({
+        phone: {
+          contains: searchContactReq.phone,
+        },
+      });
+    }
+
+    const skip = (searchContactReq.page - 1) * searchContactReq.size;
+
+    const contacts = await this.prismaService.contact.findMany({
+      where: {
+        username: user.username,
+        AND: filters,
+      },
+      take: searchContactReq.size,
+      skip: skip,
+    });
+
+    const total = await this.prismaService.contact.count({
+      where: {
+        username: user.username,
+        AND: filters,
+      },
+    });
+
+    return {
+      data: contacts.map((c) => this.toContactRes(c)),
+      paging: {
+        current_page: searchContactReq.page,
+        size: searchContactReq.size,
+        total_page: Math.ceil(total / searchContactReq.size),
+      },
+    };
   }
 }
