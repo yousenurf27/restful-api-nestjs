@@ -1,10 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { PrismaService } from '../common/prisma.service';
 import { ValidationService } from '../common/validation.service';
-import { User } from '@prisma/client';
-import { AddressRes, CreateAddressReq } from '../model/address.model';
+import { Address, User } from '@prisma/client';
+import {
+  AddressRes,
+  CreateAddressReq,
+  GetAddressReq,
+} from '../model/address.model';
 import { AddressValidation } from './address.validation';
 import { ContactService } from '../contact/contact.service';
 
@@ -35,6 +39,10 @@ export class AddressService {
       data: createReq,
     });
 
+    return this.toAddressRes(address);
+  }
+
+  toAddressRes(address: Address): AddressRes {
     return {
       id: address.id,
       street: address.street,
@@ -43,5 +51,27 @@ export class AddressService {
       country: address.country,
       postal_code: address.postal_code,
     };
+  }
+
+  async get(user: User, request: GetAddressReq): Promise<AddressRes> {
+    const getReq: GetAddressReq = this.validationService.validate(
+      AddressValidation.GET,
+      request,
+    );
+
+    await this.contactService.verifyContact(user.username, getReq.contact_id);
+
+    const address = await this.prismaService.address.findFirst({
+      where: {
+        id: getReq.address_id,
+        contact_id: getReq.contact_id,
+      },
+    });
+
+    if (!address) {
+      throw new HttpException('Address not found.', 404);
+    }
+
+    return this.toAddressRes(address);
   }
 }
