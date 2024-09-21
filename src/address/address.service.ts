@@ -8,6 +8,7 @@ import {
   AddressRes,
   CreateAddressReq,
   GetAddressReq,
+  UpdateAddressReq,
 } from '../model/address.model';
 import { AddressValidation } from './address.validation';
 import { ContactService } from '../contact/contact.service';
@@ -53,6 +54,21 @@ export class AddressService {
     };
   }
 
+  async verifyAddress(contactId: number, addressId: number): Promise<Address> {
+    const address = await this.prismaService.address.findFirst({
+      where: {
+        id: addressId,
+        contact_id: contactId,
+      },
+    });
+
+    if (!address) {
+      throw new HttpException('Address not found.', 404);
+    }
+
+    return address;
+  }
+
   async get(user: User, request: GetAddressReq): Promise<AddressRes> {
     const getReq: GetAddressReq = this.validationService.validate(
       AddressValidation.GET,
@@ -61,17 +77,38 @@ export class AddressService {
 
     await this.contactService.verifyContact(user.username, getReq.contact_id);
 
-    const address = await this.prismaService.address.findFirst({
-      where: {
-        id: getReq.address_id,
-        contact_id: getReq.contact_id,
-      },
-    });
-
-    if (!address) {
-      throw new HttpException('Address not found.', 404);
-    }
+    const address = await this.verifyAddress(
+      getReq.contact_id,
+      getReq.address_id,
+    );
 
     return this.toAddressRes(address);
+  }
+
+  async update(user: User, request: UpdateAddressReq): Promise<AddressRes> {
+    const updateReq: UpdateAddressReq = this.validationService.validate(
+      AddressValidation.UPDATE,
+      request,
+    );
+
+    await this.contactService.verifyContact(
+      user.username,
+      updateReq.contact_id,
+    );
+
+    const address = await this.verifyAddress(
+      updateReq.contact_id,
+      updateReq.id,
+    );
+
+    const updateAddress = await this.prismaService.address.update({
+      where: {
+        id: address.id,
+        contact_id: address.contact_id,
+      },
+      data: updateReq,
+    });
+
+    return this.toAddressRes(updateAddress);
   }
 }
