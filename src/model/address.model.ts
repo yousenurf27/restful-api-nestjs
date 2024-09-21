@@ -30,3 +30,8 @@ export class UpdateAddressReq {
   country: string;
   postal_code: string;
 }
+
+export class RemoveAddressReq {
+  contact_id: number;
+  address_id: number;
+}
