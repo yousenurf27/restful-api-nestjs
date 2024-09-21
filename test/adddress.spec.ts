@@ -76,7 +76,7 @@ describe('AddressController', () => {
     });
   });
 
-  describe('GET /api/contacts/:contactId/addresses', () => {
+  describe('GET /api/contacts/:contactId/addresses/:addressId', () => {
     beforeEach(async () => {
       await testService.deleteAll();
 
@@ -225,7 +225,7 @@ describe('AddressController', () => {
     });
   });
 
-  describe('DELETE /api/contacts/:contactId/addresses', () => {
+  describe('DELETE /api/contacts/:contactId/addresses/:addressId', () => {
     beforeEach(async () => {
       await testService.deleteAll();
 
@@ -274,6 +274,40 @@ describe('AddressController', () => {
 
       const addressCheck = await testService.getAddress();
       expect(addressCheck).toBeNull();
+    });
+  });
+
+  describe('GET /api/contacts/:contactId/addresses', () => {
+    beforeEach(async () => {
+      await testService.deleteAll();
+
+      await testService.createUser();
+      await testService.createContact();
+      await testService.createAddress();
+    });
+
+    it('should be rejected if contact is not found', async () => {
+      const contact = await testService.getContact();
+      const response = await request(app.getHttpServer())
+        .get(`/api/contacts/${contact.id + 1}/addresses`)
+        .set('Authorization', 'test');
+
+      logger.info(response.body);
+
+      expect(response.status).toBe(404);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to list address', async () => {
+      const contact = await testService.getContact();
+      const response = await request(app.getHttpServer())
+        .get(`/api/contacts/${contact.id}/addresses`)
+        .set('Authorization', 'test');
+
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.length).toBe(1);
     });
   });
 });
