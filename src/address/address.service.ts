@@ -135,4 +135,16 @@ export class AddressService {
 
     return this.toAddressRes(address);
   }
+
+  async list(user: User, contactId: number): Promise<AddressRes[]> {
+    await this.contactService.verifyContact(user.username, contactId);
+
+    const addresses = await this.prismaService.address.findMany({
+      where: {
+        contact_id: contactId,
+      },
+    });
+
+    return addresses.map((a) => this.toAddressRes(a));
+  }
 }

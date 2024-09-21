@@ -92,4 +92,17 @@ export class AddressController {
       data: 'Success delete address.',
     };
   }
+
+  @Get()
+  @HttpCode(200)
+  async list(
+    @Auth() user: User,
+    @Param('contactId', ParseIntPipe) contactId: number,
+  ): Promise<WebResponse<AddressRes[]>> {
+    const result = await this.addressService.list(user, contactId);
+
+    return {
+      data: result,
+    };
+  }
 }
