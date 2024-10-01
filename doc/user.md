@@ -87,26 +87,28 @@ Response Body (Success) :
 
 Response Body (Failed) :
 
-````json
+```json
 {
-  "errors" : "Unauthorized"
+  "errors": "Unauthorized"
 }
+```
 
 ## Update User
 
 Endpoint : PATCH /api/users/current
 
 Headers :
+
 - Authorization: token
 
 Request Body :
 
 ```json
 {
-  "password" : "rahasia", // optional, if wont to change
-  "name" : "Youse Nur F" // optional, if wont to change
+  "password": "rahasia", // optional, if wont to change
+  "name": "Youse Nur F" // optional, if wont to change
 }
-````
+```
 
 Response Body (Success) :
 
