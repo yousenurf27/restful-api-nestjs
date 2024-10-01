@@ -17,7 +17,8 @@
     "test:watch": "jest --watch --runInBand",
     "test:cov": "jest --coverage --runInBand",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "prisma": "npx prisma"
+    "prisma": "npx prisma",
+    "vercel-build": "prisma generate && prisma migrate deploy"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
