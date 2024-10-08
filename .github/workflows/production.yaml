@@ -19,9 +19,9 @@ jobs:
         run: npm ci
       - name: Build NestJS Project
         run: npm run build
-      - name: Migrate to database
-        run: npx prisma migrate deploy
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Migrate to database
+        run: npx prisma migrate deploy
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
