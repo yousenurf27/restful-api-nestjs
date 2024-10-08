@@ -26,8 +26,8 @@ jobs:
           - 5432:5432
 
     env:
-      POSTGRES_PRISMA_URL: postgresql://postgres:27021999@localhost:5432/belajar_nestjs
-      POSTGRES_URL_NON_POOLING: postgresql://postgres:27021999@localhost:5432/belajar_nestjs
+      POSTGRES_PRISMA_URL: postgresql://postgres:postgres@localhost:5432/belajar_nestjs
+      POSTGRES_URL_NON_POOLING: postgresql://postgres:postgres@localhost:5432/belajar_nestjs
 
     steps:
       - uses: actions/checkout@v4
