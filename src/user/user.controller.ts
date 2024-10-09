@@ -17,13 +17,26 @@ import {
 } from '../model/user.model';
 import { Auth } from '../common/auth.decorator';
 import { User } from '@prisma/client';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('/api/users')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Post()
   @HttpCode(200)
+  @ApiOkResponse({ type: UserRes })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiBody({
+    type: RegisterUserReq,
+    description: 'Create user structure',
+  })
   async register(
     @Body() request: RegisterUserReq,
   ): Promise<WebResponse<UserRes>> {

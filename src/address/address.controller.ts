@@ -20,7 +20,9 @@ import {
   UpdateAddressReq,
 } from '../model/address.model';
 import { WebResponse } from '../model/web.model';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Addresses')
 @Controller('/api/contacts/:contactId/addresses')
 export class AddressController {
   constructor(private addressService: AddressService) {}

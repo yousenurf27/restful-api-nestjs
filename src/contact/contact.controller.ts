@@ -20,7 +20,9 @@ import {
   UpdateContactReq,
 } from '../model/contact.model';
 import { WebResponse } from '../model/web.model';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Contacts')
 @Controller('/api/contacts')
 export class ContactController {
   constructor(private contactService: ContactService) {}
