@@ -9,7 +9,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('User Management')
     .setDescription(
-      'You can create and manage accounts, addresses and contacts.',
+      'You can create and manage accounts, addresses and contacts. \n Swagger docs are being maintaned, you can check out full docs on my github repo (<a href="https://github.com/yousenurf27/restful-api-nestjs/tree/main/doc">Klik here</a>)',
     )
     .setVersion('1.0')
     .build();
